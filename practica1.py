@@ -19,17 +19,28 @@ def Lukas_Kanade(path, size):
     flag = True
     while (cap.isOpened()):
         ret, actual_frame = cap.read()
+        # Gray
+        actual_frame = cv2.cvtColor(actual_frame,cv2.COLOR_RGB2GRAY)
+        out = actual_frame.copy()
+
         if ret == True:
             if flag == True:
                 previous_frame = actual_frame.copy()
                 flag = False
             else:
                 Ix_y, Ix_2, Iy_2, Ix_t, Iy_t, It = tools.derivateXYT(previous_frame, actual_frame)
-                uv = np.zeros(actual_frame.shape)
                 for ix in range(inc, actual_frame.shape[1] - inc):
                     for iy in range(inc, actual_frame.shape[0] - inc):
-                        uv[ix,iy] = calcUV(Ix_y, Ix_2, Iy_2, Ix_t, Iy_t, ix, iy, size, method='pseudo')
+                        uv = calcUV(Ix_y, Ix_2, Iy_2, Ix_t, Iy_t, ix, iy, size, method='pseudo')
+
+                    #Drawing arrows
+                    if ix%size==0 and iy%size==0:
+                        cv2.arrowedLine(out,(ix,iy),(ix+uv[0],iy+uv[1]))
+
+
+                #Save the frame
                 previous_frame = actual_frame
+
 
 
 if __name__ == "__main__":
