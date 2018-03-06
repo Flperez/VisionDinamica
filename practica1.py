@@ -53,3 +53,5 @@ if __name__ == "__main__":
     path_video = args['video']
     size = 3
     Lukas_Kanade(path_video, size)
+    # @TODO: probarlo, tiempos, y el otro metodo
+
