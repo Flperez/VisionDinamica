@@ -58,6 +58,9 @@ def calcUV(A, B):
 def npsumMat(Mat,ix,iy,inc):
     return np.sum(Mat[ix - inc:ix + inc, iy - inc:iy + inc])
 
+def med(Mat,ix,iy,inc):
+    return np.mean(Mat[ix - inc:ix + inc, iy - inc:iy + inc])
+
 @jit
 def ecUV(Ix_y, Ix_2, Iy_2, Ix_t, Iy_t, size, ix, iy):
     inc = int(size / 2)

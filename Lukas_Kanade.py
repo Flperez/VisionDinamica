@@ -15,8 +15,16 @@ def calcUV(Ix_y, Ix_2, Iy_2, Ix_t, Iy_t, ix, iy, size, method='pseudo'):
     return uv
 
 
-def Lukas_Kanade(path, size):
+def Lukas_Kanade(path, path_out,size):
     cap = cv2.VideoCapture(path)
+    if path_out:
+        visu = True
+        fourcc = cv2.VideoWriter_fourcc('X','V', 'I','D')
+        out_v = cv2.VideoWriter(path_out, fourcc, 33.0, (320, 240))
+    else:
+        visu = False
+
+
     inc = int(size / 2)
     flag = True
     while (cap.isOpened()):
@@ -34,7 +42,6 @@ def Lukas_Kanade(path, size):
             else:
                 start = time.clock()
                 Ix_y, Ix_2, Iy_2, Ix_t, Iy_t, It = calculate.derivateXYT(previous_frame, actual_frame, 'Lukas_kanade')
-                print ('shape',actual_frame.shape)
                 for ix in range(inc, actual_frame.shape[1] - inc):
                     for iy in range(inc, actual_frame.shape[0] - inc):
 
@@ -46,9 +53,9 @@ def Lukas_Kanade(path, size):
 
                 print (time.clock() - start)
                 out = cv2.resize(out,(32*10,24*10))
-
-                cv2.imshow("out",out)
-                cv2.waitKey(2)
+                if visu:
+                    cv2.imshow("out",out)
+                    cv2.waitKey(2)
 
                 #Save the frame
                 previous_frame = actual_frame
