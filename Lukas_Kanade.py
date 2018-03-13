@@ -18,11 +18,11 @@ def calcUV(Ix_y, Ix_2, Iy_2, Ix_t, Iy_t, ix, iy, size, method='pseudo'):
 def Lukas_Kanade(path, path_out,size):
     cap = cv2.VideoCapture(path)
     if path_out:
-        visu = True
+        visu = False
         fourcc = cv2.VideoWriter_fourcc('X','V', 'I','D')
         out_v = cv2.VideoWriter(path_out, fourcc, 33.0, (320, 240))
     else:
-        visu = False
+        visu = True
 
 
     inc = int(size / 2)
@@ -56,6 +56,8 @@ def Lukas_Kanade(path, path_out,size):
                 if visu:
                     cv2.imshow("out",out)
                     cv2.waitKey(2)
+                else:
+                    out_v.write(out)
 
                 #Save the frame
                 previous_frame = actual_frame

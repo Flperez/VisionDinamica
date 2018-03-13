@@ -18,7 +18,7 @@ if __name__ == "__main__":
     path_out = args['out']
     size = int(args['size'])
 
-    if method == 'Lukas_kanade':
+    if method == 'Lukas_Kanade':
         import Lukas_Kanade
         Lukas_Kanade.Lukas_Kanade(path_video, path_out,size)
     elif method == 'Horn_Schunk':
