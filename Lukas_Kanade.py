@@ -1,6 +1,7 @@
 import time
 from tools import calculate
 import cv2
+import math
 
 
 def calcUV(Ix_y, Ix_2, Iy_2, Ix_t, Iy_t, ix, iy, size, method='pseudo'):
@@ -33,15 +34,15 @@ def Lukas_Kanade(path, size):
             else:
                 start = time.clock()
                 Ix_y, Ix_2, Iy_2, Ix_t, Iy_t, It = calculate.derivateXYT(previous_frame, actual_frame, 'Lukas_kanade')
+                print ('shape',actual_frame.shape)
                 for ix in range(inc, actual_frame.shape[1] - inc):
                     for iy in range(inc, actual_frame.shape[0] - inc):
-                        # print (ix,iy)
 
-                        uv = calcUV(Ix_y, Ix_2, Iy_2, Ix_t, Iy_t, ix, iy, size, method='pseudo')
-                        # print (uv)
-                        #Drawing arrows
+
+                        uv = calcUV(Ix_y, Ix_2, Iy_2, Ix_t, Iy_t, iy, ix, size, method='ecuation')
+                        # Drawing arrows
                         if ix%size==0 and iy%size==0:
-                            cv2.arrowedLine(out,(iy,ix),(iy+uv[0],ix+uv[1]),(255,0,0))
+                            cv2.arrowedLine(out,(ix,iy),(ix+uv[0],iy+uv[1]),(255,0,0))
 
                 print (time.clock() - start)
                 out = cv2.resize(out,(32*10,24*10))

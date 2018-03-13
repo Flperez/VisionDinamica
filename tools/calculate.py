@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 from numba import jit
+import math
 @jit
 def calcPinv(Ix_y, Ix_2, Iy_2, ix, iy, size):
     A = np.matrix(((0, 0),(0,0)))
@@ -68,6 +69,11 @@ def ecUV(Ix_y, Ix_2, Iy_2, Ix_t, Iy_t, size, ix, iy):
 
     v2 = u2
     v = v1 / v2
+    if math.isnan(u):
+        u = 0
+    if math.isnan(v):
+        v = 0
+
     return np.vstack([u,v])
 
 
