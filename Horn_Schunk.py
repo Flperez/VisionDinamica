@@ -11,7 +11,7 @@ def HScalcUV(Ix, Iy, It, Ix_2, Iy_2, ix, iy, size, f_lambda, previous_u, previou
     inc = int(size / 2)
     u1 = calculate.npsumMat(Ix, ix, iy, inc) * previous_u + calculate.npsumMat(Iy, ix, iy, inc) * previous_v \
          + calculate.npsumMat(It, ix, iy, inc)
-    u2 = f_lambda + calculate.npsumMat(Ix_2, ix, iy) + calculate.npsumMat(Iy_2, ix, iy, inc)
+    u2 = f_lambda + calculate.npsumMat(Ix_2, ix, iy, inc) + calculate.npsumMat(Iy_2, ix, iy, inc)
     u = previous_u - calculate.npsumMat(Ix, ix, iy, inc) * (u1 / u2)
     v = previous_v - calculate.npsumMat(Iy, ix, iy, inc) * (u1 / u2)
     return np.vstack([u, v])
