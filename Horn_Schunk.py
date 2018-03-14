@@ -2,38 +2,40 @@ import time
 from tools import calculate
 import cv2,math
 import numpy as np
+from scipy.signal import convolve2d
 
-
-def HScalcUV(Ix, Iy, It, Ix_2, Iy_2, ix, iy, size, f_lambda, previous_u, previous_v, N_iter):
-    inc = int(size / 2)
-    p_u = calculate.med(previous_u,ix, ix,inc)
-    p_v = calculate.med(previous_v,ix, ix,inc)
-
+def HScalcUV(Ix, Iy, It, Ix_2, Iy_2, f_lambda, u, v, N_iter):
+    kernel = np.array(([1/12,1/6,1/12],
+                       [1/6,0,1/6],
+                       [1/12,1/6,1/12]))
+    f_lambda = (f_lambda ** 2)*np.ones(Ix.shape)
     for i in range(N_iter):
-        f_lambda = f_lambda ** 2
+        # Velocidad media
+        uAvg = convolve2d(u,kernel,'same')
+        vAvg = convolve2d(v,kernel,'same')
 
-        u1 = calculate.npsumMat(Ix, ix, iy, inc) * p_u + calculate.npsumMat(Iy, ix, iy, inc) * p_v \
-             + calculate.npsumMat(It, ix, iy, inc)
-        u2 = f_lambda + calculate.npsumMat(Ix_2, ix, iy, inc) + calculate.npsumMat(Iy_2, ix, iy, inc)
-        u = p_u - calculate.npsumMat(Ix, ix, iy, inc) * (u1 / u2)
-        v = p_v - calculate.npsumMat(Iy, ix, iy, inc) * (u1 / u2)
-        p_u=u
-        p_v=v
+        # Calculo
+        u1 = np.multiply(Ix,((np.multiply(Ix,uAvg))+(np.multiply(Iy,vAvg))+It))
+        v1 = np.multiply(Iy,((np.multiply(Ix,uAvg))+(np.multiply(Iy,vAvg))+It))
+        u2 = f_lambda+Ix_2+Iy_2
+
+        u = uAvg - np.divide(u1,u2)
+        v = vAvg - np.divide(v1,u2)
 
 
-    return np.vstack([u, v])
+    return u,v
 
 
 def Horn_Schunk(path_in,path_out, size):
     cap = cv2.VideoCapture(path_in)
+
     if path_out:
-        visu = True
+        visu = False
         fourcc = cv2.VideoWriter_fourcc('X','V', 'I','D')
         out_v = cv2.VideoWriter(path_out, fourcc, 33.0, (320, 240))
     else:
-        visu = False
+        visu = True
 
-    inc = int(size / 2)
     flag = True
     f_lambda = 20
     threshold = 50
@@ -48,39 +50,26 @@ def Horn_Schunk(path_in,path_out, size):
         if ret == True:
             if flag == True:
                 previous_frame = actual_frame.copy()
-                previous_u = np.zeros(actual_frame.shape)
-                previous_v = np.zeros(actual_frame.shape)
+                u = np.zeros(actual_frame.shape)
+                v = np.zeros(actual_frame.shape)
                 flag = False
             else:
                 start = time.clock()
                 Ix, Iy, It, Ix_2, Iy_2 = calculate.derivateXYT(previous_frame, actual_frame, 'Horn_Schunk')
-                for ix in range(inc, actual_frame.shape[1] - inc):
-                    for iy in range(inc, actual_frame.shape[0] - inc):
-
-                        uv = HScalcUV(Ix, Iy, It, Ix_2, Iy_2, iy, ix, size, f_lambda, previous_u, previous_v, 50)
-                        if math.isnan(uv[0]):
-                            uv[0] = 0
-                        if math.isnan(uv[1]):
-                            uv[1] = 0
-                        if uv[0] > threshold:
-                            uv[0] = threshold
-                        if uv[1] > threshold:
-                            uv[1] = threshold
-
-                        if uv[0] < -threshold:
-                            uv[0] = -threshold
-                        if uv[1] < -threshold:
-                            uv[1] = -threshold
-
-                        # Drawing arrows
-                        if ix % size == 0 and iy % size == 0:
-                            cv2.arrowedLine(out, (ix, iy), (ix + uv[1], iy + uv[0]), (255, 0, 0))
-
-                        previous_u[iy,ix]=uv[0]
-                        previous_v[iy,ix]=uv[1]
-
-
+                u,v = HScalcUV(Ix, Iy, It, Ix_2, Iy_2, f_lambda, u, v, 50)
                 print(time.clock() - start)
+
+                # Drawing arrows
+                for ix in range( actual_frame.shape[0] ):
+                    for iy in range(actual_frame.shape[1] ):
+                        if ix % size == 0 and iy % size == 0:
+                            if u[ix,iy] is np.nan:
+                                u[ix,iy]=0
+                            if v[ix,iy] is np.nan:
+                                v[ix,iy]=0
+                            cv2.arrowedLine(out, (iy, ix), (iy + int(u[ix,iy]), ix + int(v[ix,iy])), (255, 0, 0))
+
+
                 out = cv2.resize(out, (32 * 10, 24 * 10))
                 if visu:
                     cv2.imshow("out", out)
@@ -90,4 +79,5 @@ def Horn_Schunk(path_in,path_out, size):
 
                 # Save the frame
                 previous_frame = actual_frame
+
 
