@@ -28,6 +28,7 @@ def HScalcUV(Ix, Iy, It, Ix_2, Iy_2, f_lambda, u, v, N_iter):
 
 def Horn_Schunk(path_in,path_out, size):
     cap = cv2.VideoCapture(path_in)
+    length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
     if path_out:
         visu = False
@@ -39,6 +40,7 @@ def Horn_Schunk(path_in,path_out, size):
     flag = True
     f_lambda = 20
     threshold = 50
+    cont = 0
     while (cap.isOpened()):
         ret, actual_frame = cap.read()
         # Gray
@@ -57,7 +59,7 @@ def Horn_Schunk(path_in,path_out, size):
                 start = time.clock()
                 Ix, Iy, It, Ix_2, Iy_2 = calculate.derivateXYT(previous_frame, actual_frame, 'Horn_Schunk')
                 u,v = HScalcUV(Ix, Iy, It, Ix_2, Iy_2, f_lambda, u, v, 50)
-                print(time.clock() - start)
+                print('T: ',time.clock() - start,'Frame: ',cont,'/',length)
 
                 # Drawing arrows
                 for ix in range( actual_frame.shape[0] ):
@@ -79,5 +81,5 @@ def Horn_Schunk(path_in,path_out, size):
 
                 # Save the frame
                 previous_frame = actual_frame
-
+                cont+=1
 
