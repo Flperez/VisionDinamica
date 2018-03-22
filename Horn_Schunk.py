@@ -26,7 +26,7 @@ def HScalcUV(Ix, Iy, It, Ix_2, Iy_2, f_lambda, u, v, N_iter):
     return u,v
 
 
-def Horn_Schunk(path_in,path_out, size):
+def Horn_Schunk(path_in,path_out, size,N_iter,f_lambda):
     cap = cv2.VideoCapture(path_in)
     length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
@@ -38,8 +38,7 @@ def Horn_Schunk(path_in,path_out, size):
         visu = True
 
     flag = True
-    f_lambda = 20
-    threshold = 50
+
     cont = 0
     while (cap.isOpened()):
         ret, actual_frame = cap.read()
@@ -58,7 +57,7 @@ def Horn_Schunk(path_in,path_out, size):
             else:
                 start = time.clock()
                 Ix, Iy, It, Ix_2, Iy_2 = calculate.derivateXYT(previous_frame, actual_frame, 'Horn_Schunk')
-                u,v = HScalcUV(Ix, Iy, It, Ix_2, Iy_2, f_lambda, u, v, 50)
+                u,v = HScalcUV(Ix, Iy, It, Ix_2, Iy_2, f_lambda, u, v, N_iter)
                 print('T: ',time.clock() - start,'Frame: ',cont,'/',length)
 
                 # Drawing arrows
@@ -69,7 +68,8 @@ def Horn_Schunk(path_in,path_out, size):
                                 u[ix,iy]=0
                             if v[ix,iy] is np.nan:
                                 v[ix,iy]=0
-                            cv2.arrowedLine(out, (iy, ix), (iy + int(u[ix,iy]), ix + int(v[ix,iy])), (255, 0, 0))
+                            if int(u[ix,iy])>0 and int(v[ix,iy])>0:
+                                cv2.arrowedLine(out, (iy, ix), (iy + int(u[ix,iy]), ix + int(v[ix,iy])), (255, 0, 0))
 
 
                 out = cv2.resize(out, (32 * 10, 24 * 10))

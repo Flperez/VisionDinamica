@@ -48,6 +48,8 @@ def derivateXYT(previous_frame, actual_frame,method):
 def calcB(Ix_t, Iy_t, ix, iy, size):
     B = np.matrix(((0), (0))).T
     inc = int(size / 2)
+
+
     B[0, 0] = - npsumMat(Ix_t,ix,iy,inc)
     B[1, 0] = - npsumMat(Iy_t,ix,iy,inc)
     return B

@@ -15,7 +15,7 @@ def calcUV(Ix_y, Ix_2, Iy_2, Ix_t, Iy_t, ix, iy, size, method='pseudo'):
     return uv
 
 
-def Lukas_Kanade(path, path_out,size):
+def Lukas_Kanade(path, path_out,size,operation):
     cap = cv2.VideoCapture(path)
     if path_out:
         visu = False
@@ -44,12 +44,14 @@ def Lukas_Kanade(path, path_out,size):
                 Ix_y, Ix_2, Iy_2, Ix_t, Iy_t, It = calculate.derivateXYT(previous_frame, actual_frame, 'Lukas_kanade')
                 for ix in range(inc, actual_frame.shape[1] - inc):
                     for iy in range(inc, actual_frame.shape[0] - inc):
+                        # start2 = time.clock()
 
-
-                        uv = calcUV(Ix_y, Ix_2, Iy_2, Ix_t, Iy_t, iy, ix, size, method='ecuation')
+                        uv = calcUV(Ix_y, Ix_2, Iy_2, Ix_t, Iy_t, iy, ix, size, method=operation)
                         # Drawing arrows
                         if ix%size==0 and iy%size==0:
-                            cv2.arrowedLine(out,(ix,iy),(ix+uv[0],iy+uv[1]),(255,0,0))
+                            if uv[0]>0 and uv[1]>0:
+                                cv2.arrowedLine(out,(ix,iy),(ix+uv[0],iy+uv[1]),(255,0,0))
+                        # print (time.clock() - start2)
 
                 print (time.clock() - start)
                 out = cv2.resize(out,(32*10,24*10))
