@@ -12,6 +12,7 @@ altos = np.array([80, 255, 255])
 
 def condensation(mask,BB_previous,Flag_BB,N=10):
     if  Flag_BB==False: #caso de no haber encontrado nada
+        #offset not constante
         # 1.- Inicializacion
         w,h = mask.shape
         y = np.random.randint(0+offset, w+offset, size=(N,1))
