@@ -72,7 +72,7 @@ def main(path):
             else:
                 out = frame.copy()
                 mask = f_condensation.calcMask(frame,bajos,altos)
-                f_condensation.drawBB(out,BB_difusion,offset,(255,0,0))
+                # f_condensation.drawBB(out,BB_difusion,offset,(255,0,0))
 
                 xy_best,BB_difusion,Flag_BB = condensation(mask,BB_difusion,Flag_BB,50)
                 f_condensation.drawBB(out,xy_best,offset,(0,0,255))
@@ -80,7 +80,7 @@ def main(path):
 
                 fx = 5
                 cv2.imshow("video",cv2.resize(out,None,fx=fx,fy=fx))
-                cv2.waitKey()
+                cv2.waitKey(100)
         else:
             break
 
