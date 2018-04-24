@@ -36,7 +36,7 @@ def condensation(mask,BB_previous,Flag_BB,N=10):
         xy_best = BB_previous[np.argmax(pesos),:]
 
         # 4.- Seleccion
-        Nselec = 10
+        Nselec = N
         states = []
         for i in range(Nselec):
             random_seed = np.random.rand(1)
@@ -72,9 +72,10 @@ def main(path):
             else:
                 out = frame.copy()
                 mask = f_condensation.calcMask(frame,bajos,altos)
+                f_condensation.drawBB(out,BB_difusion,offset,(255,0,0))
+
                 xy_best,BB_difusion,Flag_BB = condensation(mask,BB_difusion,Flag_BB,50)
                 f_condensation.drawBB(out,xy_best,offset,(0,0,255))
-                f_condensation.drawBB(out,BB_difusion,offset,(255,0,0))
                 #out = cv2.cvtColor(mask,cv2.COLOR_GRAY2RGB)
 
                 fx = 5
