@@ -26,7 +26,6 @@ def npcountMat(Mat,ix,iy,inc):
 
     return np.count_nonzero(Mat[y_begin:y_end, x_begin:x_end])
 
-
 def drawBB(image,xys,offset,color):
     if type(xys) == np.ndarray:
         xys = np.reshape(xys, (-1, 2))

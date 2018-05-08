@@ -72,7 +72,7 @@ def main(path):
             else:
                 out = frame.copy()
                 mask = f_condensation.calcMask(frame,bajos,altos)
-                # f_condensation.drawBB(out,BB_difusion,offset,(255,0,0))
+                f_condensation.drawBB(out,BB_difusion,offset,(255,0,0))
 
                 xy_best,BB_difusion,Flag_BB = condensation(mask,BB_difusion,Flag_BB,50)
                 f_condensation.drawBB(out,xy_best,offset,(0,0,255))
@@ -91,7 +91,7 @@ def main(path):
 if __name__=="__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--video", required=True,
-                    help="ruta al video de entrada")
+                    help="ruta al video de entrada",default="videos/ball.mp4")
     args = vars(ap.parse_args())
     path_video = args['video']
     main(path_video)
